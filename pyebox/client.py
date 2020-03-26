@@ -1,8 +1,6 @@
 """
 Pyebox
 """
-import asyncio
-import json
 import logging
 import re
 import async_timeout
@@ -38,7 +36,8 @@ class PyEboxError(Exception):
 
 class EboxClient(object):
 
-    def __init__(self, username, password, timeout=REQUESTS_TIMEOUT, session=None):
+    def __init__(self, username, password, timeout=REQUESTS_TIMEOUT,
+                 session=None):
         """Initialize the client object."""
         self.username = username
         self.password = password
@@ -184,14 +183,16 @@ class EboxClient(object):
         # Merge data
         self._data.update(home_data)
         self._data.update(usage_data)
+        # Close http session
+        await self.close_session()
 
     def get_data(self):
         """Return collected data"""
         return self._data
 
-    def close_session(self):
+    async def close_session(self):
         """Close current session."""
         if not self._session.closed:
             if self._session._connector_owner:
-                self._session._connector.close()
+                await self._session._connector.close()
             self._session._connector = None

@@ -61,16 +61,13 @@ def main():
         loop.run_until_complete(task)
     except PyEboxError as exp:
         print(exp)
-        client.close_session()
         return
     if not client.get_data():
-        client.close_session()
         return
     if args.json:
         print(json.dumps(client.get_data()))
     else:
         _format_output(args.username, client.get_data())
-    client.close_session()
 
 
 if __name__ == '__main__':
